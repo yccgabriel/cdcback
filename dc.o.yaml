@@ -1,0 +1,30 @@
+version: '3'
+services:
+  odoo:
+    platform: linux/amd64
+    image: odoo:16
+    depends_on:
+      - db
+    ports:
+      - 8069:8069
+    volumes:
+      - ./etc/odoo.conf:/etc/odoo/odoo.conf
+      - ./volumes/odoo/data:/var/lib/odoo
+      - ./volumes/odoo/extra-addons:/mnt/extra-addons
+    hostname: odoo
+    container_name: cdc-odoo
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      PGDATA: /var/lib/postgresql/data/pgdata
+    command: postgres -c config_file=/etc/postgresql.conf
+    volumes:
+      - ./etc/postgresql.conf:/etc/postgresql.conf
+      - ./volumes/db/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    hostname: db
+    container_name: cdc-db
